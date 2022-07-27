@@ -1,34 +1,71 @@
-# TSDX User Guide
+# @cassler/tailwind-plugin-surfaces
 
-Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
+This plugin add a `.box-*` utility class for quickly applying a "surface style" to elements. This works exactly the same as `.bg-*` while also configuring the containers `backgroundColor` and `borderColor`, as well as the `color` rule for child headings, body and captions.
 
-> This TSDX setup is meant for developing libraries (not apps!) that can be published to NPM. If you’re looking to build a Node app, you could use `ts-node-dev`, plain `ts-node`, or simple `tsc`.
+- Uses your theme colors.
+- Dynamically apply text styles based on computed contrast.
+- Simple text hierarchy styling defaults.
 
-> If you’re new to TypeScript, checkout [this handy cheatsheet](https://devhints.io/typescript)
+### Install
 
-## Commands
+`pnpm add @cassler/tailwind-plugin-elements` 
 
-TSDX scaffolds your new library inside `/src`.
+### Configure plugin
 
-To run TSDX, use:
-
-```bash
-npm start # or yarn start
+```js
+// tailwind.config.js
+module.exports = {
+   // ...your config
+   plugins: [
+     require('@cassler/tailwind-plugin-surfaces')
+   ]
+}
 ```
 
-This builds to `/dist` and runs the project in watch mode so any edits you save inside `src` causes a rebuild to `/dist`.
+### Usage
+```html
+<div class='box-blue-800'>
+    <h3>I have white headings</h3>
+    <p>My background is blue-800, and this text is blue-50.</p>
+    <small>Captions have lower contrast, so this is blue-200</small>
+</div>
+```
 
-To do a one-off build, use `npm run build` or `yarn build`.
+### Full CSS Output 
 
-To run tests, use `npm test` or `yarn test`.
+To use `.box-blue-100` is equal to:
 
-## Configuration
+```css
+.my-item { 
+  background-color: theme(colors.blue.100); 
+  border-color: theme(colors.blue.400);
+  color: theme(colors.blue.900);
+}
+.my-item h1,
+.my-item h2,
+.my-item h3,
+.my-item h4,
+.my-item h5,
+.my-item h6 {
+  color: theme(colors.black)
+}
+.my-item caption, 
+.my-item small,
+.my-item footer {
+  color: theme(colors.blue.700)
+}
+```
 
-Code quality is set up for you with `prettier`, `husky`, and `lint-staged`. Adjust the respective fields in `package.json` accordingly.
+### Demos 
 
-### Jest
+| Example Class | Output |
+| ----- | --- |
+| `.box-blue-800` | <img width="342" alt="image" src="https://user-images.githubusercontent.com/140459/181387285-469bc92d-e091-4737-8d52-478b69878f4d.png"> |
+| `.box-blue-100` | <img width="335" alt="image" src="https://user-images.githubusercontent.com/140459/181387322-eb80351c-743e-4c3b-bfc3-74efb959f318.png"> |
+| `.box-gray-200` | <img width="340" alt="image" src="https://user-images.githubusercontent.com/140459/181387411-f703cbb0-b229-4ced-a328-42dff68956c1.png"> |
+| `.box-green-100` | <img width="342" alt="image" src="https://user-images.githubusercontent.com/140459/181387673-3febc528-a23a-473c-b659-68e6cd1fabec.png"> | 
+| `.box-green-600` | <img width="335" alt="image" src="https://user-images.githubusercontent.com/140459/181387704-aeb6102d-2731-495b-b2fd-1e3c78a904db.png"> |
 
-Jest tests are set up to run with `npm test` or `yarn test`.
 
 ### Bundle Analysis
 
