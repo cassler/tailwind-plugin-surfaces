@@ -1,7 +1,7 @@
 const plugin = require('tailwindcss/plugin');
 const cols = require('tailwindcss/colors');
 
-function hexIsLight(color:string) {
+export function hexIsLight(color:string) {
   const hex = color.replace('#', '');
   const contrastR = parseInt(hex.substr(0, 2), 16);
   const contrastG = parseInt(hex.substr(2, 2), 16);

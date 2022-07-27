@@ -41,11 +41,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint
-        run: pnpm lint
+      # - name: Lint
+      #   run: pnpm lint
 
       - name: Test
-        run: pnpm test --ci --coverage --maxWorkers=2
+        run: pnpm test -- --ci --coverage --maxWorkers=2
 
       - name: Build
         run: pnpm build
