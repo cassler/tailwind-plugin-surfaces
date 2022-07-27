@@ -23,13 +23,25 @@ module.exports = {
 ```
 
 ### Usage
-```html
-<div class='box-blue-800'>
-    <h3>I have white headings</h3>
-    <p>My background is blue-800, and this text is blue-50.</p>
-    <small>Captions have lower contrast, so this is blue-200</small>
+
+```jsx
+<div className='box-blue-800'>
+   <h3>My Heading</h3>
+   <p>Box content</p>
+   <small>Fine print</small>
 </div>
 ```
+
+### Demos 
+
+| Example Class | Output |
+| ----- | --- |
+| `.box-blue-800` | <img width="342" alt="image" src="https://user-images.githubusercontent.com/140459/181387285-469bc92d-e091-4737-8d52-478b69878f4d.png"> |
+| `.box-blue-100` | <img width="335" alt="image" src="https://user-images.githubusercontent.com/140459/181387322-eb80351c-743e-4c3b-bfc3-74efb959f318.png"> |
+| `.box-gray-200` | <img width="340" alt="image" src="https://user-images.githubusercontent.com/140459/181387411-f703cbb0-b229-4ced-a328-42dff68956c1.png"> |
+| `.box-green-100` | <img width="342" alt="image" src="https://user-images.githubusercontent.com/140459/181387673-3febc528-a23a-473c-b659-68e6cd1fabec.png"> | 
+| `.box-green-600` | <img width="335" alt="image" src="https://user-images.githubusercontent.com/140459/181387704-aeb6102d-2731-495b-b2fd-1e3c78a904db.png"> |
+
 
 ### Full CSS Output 
 
@@ -56,16 +68,26 @@ To use `.box-blue-100` is equal to:
 }
 ```
 
-### Demos 
+#### Convert from vanilla Tailwind
 
-| Example Class | Output |
-| ----- | --- |
-| `.box-blue-800` | <img width="342" alt="image" src="https://user-images.githubusercontent.com/140459/181387285-469bc92d-e091-4737-8d52-478b69878f4d.png"> |
-| `.box-blue-100` | <img width="335" alt="image" src="https://user-images.githubusercontent.com/140459/181387322-eb80351c-743e-4c3b-bfc3-74efb959f318.png"> |
-| `.box-gray-200` | <img width="340" alt="image" src="https://user-images.githubusercontent.com/140459/181387411-f703cbb0-b229-4ced-a328-42dff68956c1.png"> |
-| `.box-green-100` | <img width="342" alt="image" src="https://user-images.githubusercontent.com/140459/181387673-3febc528-a23a-473c-b659-68e6cd1fabec.png"> | 
-| `.box-green-600` | <img width="335" alt="image" src="https://user-images.githubusercontent.com/140459/181387704-aeb6102d-2731-495b-b2fd-1e3c78a904db.png"> |
-
+```diff
+- <div className={dark ? 'bg-blue-800 text-blue-50' : 'bg-blue-50 text-blue-900'}>
+-   <h3 className={dark ? 'text-white' : 'text-black'}>
+-      My heading
+-   </h3>
+-   <p className={dark: ? 'text-blue-50' : 'text-blue-900'}>
+-      Box content
+-   </p>
+-   <small class={dark ? 'text-blue-200' : 'text-blue-700'}>
+-      Fine print
+-   </small>
+- </div>
++ <div className={dark ? 'box-blue-800' : 'box-blue-50'}>
++   <h3>My Heading</h3>
++   <p>Box content</p>
++   <small>Fine print</small>
++ </div>
+```
 
 ### Bundle Analysis
 
