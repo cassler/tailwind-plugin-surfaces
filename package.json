@@ -1,5 +1,5 @@
 {
-  "title": "@cassler/tailwind-plugin-surfaces",
+  "name": "@cassler/tailwind-plugin-surfaces",
   "version": "0.1.0",
   "license": "MIT",
   "main": "dist/index.js",
@@ -31,7 +31,6 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "tailwind-plugin-surfaces",
   "author": "Darin Cassler",
   "module": "dist/tailwind-plugin-surfaces.esm.js",
   "size-limit": [
