@@ -1,35 +1,37 @@
 import plugin from 'tailwindcss/plugin';
-import { CSSRuleObject } from 'tailwindcss/types/config';
-import { DefaultColors } from 'tailwindcss/types/generated/colors';
+import type { CSSRuleObject } from 'tailwindcss/types/config';
+import type { DefaultColors } from 'tailwindcss/types/generated/colors';
 
-export function getRGBA(color:string) {
+type DefaultColorScales = Omit<DefaultColors, 'inherit' | 'current' | 'transparent' | 'black' | 'white'>;
+type ColorGetterFn = <T extends keyof DefaultColorScales>(hue: T) => DefaultColorScales[T];
+
+function getRGBA(color:string) {
   const hex = color.replace('#', '');
   const bits = hex.length / 3;
   const factor = bits === 1 ? 17 : 1;
-  const [R,G,B] = [0,1,2].map(x => {
-    let localHex = hex.slice(bits*x, bits*(x+1));
-    return parseInt(localHex, 16) * factor
-  })
+  const [R, G, B] = [0, 1, 2].map(x => {
+    let localHex = hex.slice(bits * x, bits * (x + 1));
+    return parseInt(localHex, 16) * factor;
+  });
   const brightness = ((R * 299) + (G * 587) + (B * 114)) / 1000;
-  const isBright = brightness > 155
-  return { R,G,B,brightness,isBright }
+  const isBright = brightness > 155;
+  return { R, G, B, brightness, isBright };
 }
 
-export function toRGBA(color:string, alpha:string|number = 1):string {
-  const { R,G,B } = getRGBA(color)
-  return `rgba(${R},${G},${B},${alpha})`
+function toRGBA(color:string, alpha:string | number = 1):string {
+  const { R, G, B } = getRGBA(color);
+  return `rgba(${R},${G},${B},${alpha})`;
 }
 
-export function hexIsLight(color:string):boolean {
+function hexIsLight(color:string):boolean {
   const { isBright } = getRGBA(color);
   return isBright;
 }
 
 
-export const surfaces = plugin(( {matchUtilities, theme }) => {
+const surfaces = plugin(( { matchUtilities, theme } ) => {
 
-  type DefaultColorScales = Omit<DefaultColors,'inherit'| 'current'| 'transparent'| 'black'| 'white'>
-  const getColorScale = <T extends keyof DefaultColorScales>(hue: T): DefaultColorScales[T] => theme(`colors.${hue.toString()}`)
+  const getColorScale:ColorGetterFn = (hue) => theme(`colors.${hue}`);
 
   let btnBase:CSSRuleObject = {
     letterSpacing: '-0.01333em',
@@ -78,12 +80,13 @@ export const surfaces = plugin(( {matchUtilities, theme }) => {
               backgroundColor: 'var(--bg-color)',
             },
           },
-        }}
-      }, {
-        values: getColorScale(hue as keyof DefaultColorScales),
-        type: "color"
-      });
+        };
+      },
+    }, {
+      values: getColorScale(hue as keyof DefaultColorScales),
+      type: 'color',
     });
+  });
 });
 
-export default surfaces;
+module.exports = surfaces;

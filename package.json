@@ -3,12 +3,13 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.1.9",
+  "version": "0.1.10",
   "license": "MIT",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "src/index.js"
+    "src",
+    "dist"
   ],
   "engines": {
     "node": ">=10"
