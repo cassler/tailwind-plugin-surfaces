@@ -28,7 +28,6 @@ export function hexIsLight(color:string):boolean {
 
 export const surfaces = plugin(( {matchUtilities, theme }) => {
 
-
   type DefaultColorScales = Omit<DefaultColors,'inherit'| 'current'| 'transparent'| 'black'| 'white'>
   const getColorScale = <T extends keyof DefaultColorScales>(hue: T): DefaultColorScales[T] => theme(`colors.${hue.toString()}`)
 
