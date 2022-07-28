@@ -5,7 +5,7 @@ import type { DefaultColors } from 'tailwindcss/types/generated/colors';
 type DefaultColorScales = Omit<DefaultColors, 'inherit' | 'current' | 'transparent' | 'black' | 'white'>;
 type ColorGetterFn = <T extends keyof DefaultColorScales>(hue: T) => DefaultColorScales[T];
 
-export function getRGBA(color:string) {
+const getRGBA = (color:string) => {
   const hex = color.replace('#', '');
   const bits = hex.length / 3;
   const factor = bits === 1 ? 17 : 1;
@@ -18,12 +18,12 @@ export function getRGBA(color:string) {
   return { R, G, B, brightness, isBright };
 };
 
-export function toRGBA(color:string, alpha:string | number = 1):string {
+const toRGBA = (color:string, alpha:string | number = 1):string => {
   const { R, G, B } = getRGBA(color);
   return `rgba(${R},${G},${B},${alpha})`;
 };
 
-export function hexIsLight(color:string):boolean {
+const hexIsLight = (color:string):boolean => {
   const { isBright } = getRGBA(color);
   return isBright;
 };
@@ -89,5 +89,6 @@ const surfaces = plugin(( { matchUtilities, theme } ) => {
 });
 
 module.exports = Object.assign(surfaces, {
-  hexIsLight, toRGBA, getRGBA
+  hexIsLight, toRGBA, getRGBA,
 });
+
