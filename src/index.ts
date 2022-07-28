@@ -1,8 +1,6 @@
 import plugin from 'tailwindcss/plugin';
-import { CSSRuleObject, ThemeConfig } from 'tailwindcss/types/config';
-
-
-
+import { CSSRuleObject } from 'tailwindcss/types/config';
+import { DefaultColors } from 'tailwindcss/types/generated/colors';
 
 export function getRGBA(color:string) {
   const hex = color.replace('#', '');
@@ -16,10 +14,12 @@ export function getRGBA(color:string) {
   const isBright = brightness > 155
   return { R,G,B,brightness,isBright }
 }
+
 export function toRGBA(color:string, alpha:string|number = 1):string {
   const { R,G,B } = getRGBA(color)
   return `rgba(${R},${G},${B},${alpha})`
 }
+
 export function hexIsLight(color:string):boolean {
   const { isBright } = getRGBA(color);
   return isBright;
@@ -28,19 +28,9 @@ export function hexIsLight(color:string):boolean {
 
 export const surfaces = plugin(( {matchUtilities, theme }) => {
 
-  /**
-   * This plugin provides a box-* utility class. This allows
-   * inheritence of default color palettes for background and test respectively.
-   *
-   * Ex: `.box-red-200` will have a bg of red-200, black titles, and red-900 body.
-   * Ex: `.box-blue-700` will have a bg of blue-700, white titles and blue-50 body.
-   */
 
-
-
-  function getColorScale(hue: keyof Extract<ThemeConfig,"colors">): Extract<ThemeConfig,"colors"> {
-    return theme(`colors.${hue.toString()}`)
-  }
+  type DefaultColorScales = Omit<DefaultColors,'inherit'| 'current'| 'transparent'| 'black'| 'white'>
+  const getColorScale = <T extends keyof DefaultColorScales>(hue: T): DefaultColorScales[T] => theme(`colors.${hue.toString()}`)
 
   let btnBase:CSSRuleObject = {
     letterSpacing: '-0.01333em',
@@ -56,7 +46,7 @@ export const surfaces = plugin(( {matchUtilities, theme }) => {
   };
 
   return !!matchUtilities && Object.keys(theme('colors')).map(hue => {
-    const colors = getColorScale(hue);
+    const colors = getColorScale(hue as keyof DefaultColorScales);
     return matchUtilities({
 
       [`box-${hue}`]: (value:string) => {
@@ -91,7 +81,7 @@ export const surfaces = plugin(( {matchUtilities, theme }) => {
           },
         }}
       }, {
-        values: getColorScale(hue),
+        values: getColorScale(hue as keyof DefaultColorScales),
         type: "color"
       });
     });
