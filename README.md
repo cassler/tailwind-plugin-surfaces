@@ -85,7 +85,7 @@ To use `.box-blue-100` is equal to:
 -      Fine print
 -   </small>
 - </div>
-+ <div className={dark ? 'box-blue-800' : 'box-blue-50'}>
++ <div className='box-blue-800 dark:box-blue-50'>
 +   <h3>My Heading</h3>
 +   <p>Box content</p>
 +   <small>Fine print</small>
