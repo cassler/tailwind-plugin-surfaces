@@ -2,6 +2,9 @@
 
 This plugin add a `.box-*` utility class for quickly applying a "surface style" to elements. This works exactly the same as `.bg-*` while also configuring the containers `backgroundColor` and `borderColor`, as well as the `color` rule for child headings, body and captions.
 
+<img width="1729" alt="image" src="https://user-images.githubusercontent.com/140459/181508876-5476ebc6-8c30-44e2-afeb-f65bf855e226.png">
+
+
 - Uses your theme colors.
 - Dynamically apply text styles based on computed contrast.
 - Simple text hierarchy styling defaults.
