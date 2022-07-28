@@ -3,7 +3,7 @@ import type { CSSRuleObject } from 'tailwindcss/types/config';
 import type { DefaultColors } from 'tailwindcss/types/generated/colors';
 
 type DefaultColorScales = Omit<DefaultColors, 'inherit' | 'current' | 'transparent' | 'black' | 'white'>;
-type ColorGetterFn = <T extends keyof DefaultColorScales>(hue: T) => DefaultColorScales[T];
+type DefaultColorName = keyof DefaultColorScales;
 
 const getRGBA = (color:string) => {
   const hex = color.replace('#', '');
@@ -30,59 +30,65 @@ const hexIsLight = (color:string):boolean => {
 
 
 const surfaces = plugin(( { matchUtilities, theme } ) => {
-  const getColorScale:ColorGetterFn = (hue) => theme(`colors.${hue}`);
-
-  let btnBase:CSSRuleObject = {
-    letterSpacing: '-0.01333em',
-    fontSize: '12px',
-    padding: theme('spacing.1'),
-    paddingLeft: theme('spacing.2'),
-    paddingRight: theme('spacing.2'),
-    borderRadius: theme('borderRadius.sm'),
-    backgroundColor: 'transparent',
-    border: '0px solid var(--btn-border-color)',
-    transition: 'all 0.2s ease-in-out',
-    color: 'var(--txt-color)',
+  // check that this version of Tailwind supports our plugin.
+  if (!matchUtilities) return;
+  // helper function, makes things a bit more concise
+  const getColorScale = <K extends DefaultColorName>(hue: K):DefaultColorScales[K] => theme(`colors.${hue}`);
+  // get all of the color groupings in our current theme.
+  const shades = Object.keys(theme('colors')) as DefaultColorName[];
+  // stashing this here as a way to keep global CSS consistent
+  const baseStyle:CSSRuleObject = {
+    backgroundColor: 'var(--surface-bg-color)',
+    color: 'var(--surface-text-color)',
+    borderColor: 'var(--surface-border-color)',
+    'h1,h2,h3,h4,h5,h6': {
+      fontWeight: '600',
+      color: 'var(--surface-heading-color)',
+    },
+    'small,caption,footer': {
+      color: 'var(--surface-caption-color)',
+    },
+    'button': {
+      letterSpacing: '-0.01333em',
+      fontSize: '12px',
+      padding: theme('spacing.1'),
+      paddingLeft: theme('spacing.2'),
+      paddingRight: theme('spacing.2'),
+      borderRadius: theme('borderRadius.sm'),
+      backgroundColor: 'transparent',
+      border: '0px solid var(--btn-border-color)',
+      transition: 'all 0.2s ease-in-out',
+      color: 'var(--txt-color)',
+      '&:hover': {
+        backgroundColor: 'var(--bg-hover)',
+      },
+      '&[type="submit"]': {
+        color: 'var(--surface-btn-bg-color_',
+        backgroundColor: 'var(--bg-color)',
+      },
+    }
   };
 
-  return !!matchUtilities && Object.keys(theme('colors')).map(hue => {
-    const colors = getColorScale(hue as keyof DefaultColorScales);
+  return shades.map(hue => {
+    const h = getColorScale(hue);
+    const getVar = <T extends keyof typeof h>(args0: T, args1: T, ref: string) => {
+      return h[hexIsLight(ref) ? args0 : args1];
+    };
     return matchUtilities({
-
-      [`box-${hue}`]: (value:string) => {
-        let isLight = hexIsLight(value);
-        return {
-          '--tw-ring-opacity': '0.5',
-          '--border-color': isLight ? colors['500'] : colors['300'],
-          '--btn-border-color': isLight ? toRGBA(colors[300], '0.5') : toRGBA(colors[900], '0.5'),
-          '--bg-color': toRGBA(`${isLight ? colors[700] : colors[50]}`, '0.75'),
-          '--bg-hover': toRGBA(`${isLight ? colors[700] : colors[50]}`, '0.1'),
-          '--txt-color': isLight ? colors[700] : colors[50],
-          backgroundColor: value,
-          color: isLight ? colors['900'] : colors['50'],
-          borderColor: 'var(--border-color)',
-          'h1,h2,h3,h4,h5,h6': {
-            fontWeight: '600',
-            color: isLight ? colors['900'] : colors['50'],
-          },
-          'small,caption,footer': {
-            color: isLight ? colors['700'] : colors['300'],
-          },
-          'button': {
-
-            ...btnBase,
-            '&:hover': {
-              backgroundColor: 'var(--bg-hover)',
-            },
-            '&[type="submit"]': {
-              color: isLight ? colors[50] : colors[900],
-              backgroundColor: 'var(--bg-color)',
-            },
-          },
-        };
-      },
+      [`box-${hue}`]: (value:string) => ({
+        '--tw-ring-opacity': '0.5',
+        '--tw-ring-color': getVar('700', '200', value),
+        '--tw-border-color': getVar('600', '300', value),
+        '--surface-heading-color': getVar('900', '50', value),
+        '--surface-text-color': getVar('800', '100', value),
+        '--surface-caption-color': getVar('600', '300', value),
+        '--surface-border-color': getVar('500', '300', value),
+        '--surface-btn-bg-color': getVar('50', '300', value),
+        '--surface-bg-color': value,
+        ...baseStyle,
+      })
     }, {
-      values: getColorScale(hue as keyof DefaultColorScales),
+      values: getColorScale(hue),
       type: 'color',
     });
   });
