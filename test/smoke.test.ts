@@ -1,4 +1,4 @@
-import { toRGBA, hexIsLight } from '../src';
+import { toRGBA, hexIsLight } from '../src/index';
 
 describe('blah', () => {
   it('Identified light shades', () => {

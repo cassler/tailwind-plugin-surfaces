@@ -5,7 +5,7 @@ import type { DefaultColors } from 'tailwindcss/types/generated/colors';
 type DefaultColorScales = Omit<DefaultColors, 'inherit' | 'current' | 'transparent' | 'black' | 'white'>;
 type ColorGetterFn = <T extends keyof DefaultColorScales>(hue: T) => DefaultColorScales[T];
 
-function getRGBA(color:string) {
+export function getRGBA(color:string) {
   const hex = color.replace('#', '');
   const bits = hex.length / 3;
   const factor = bits === 1 ? 17 : 1;
@@ -16,21 +16,20 @@ function getRGBA(color:string) {
   const brightness = ((R * 299) + (G * 587) + (B * 114)) / 1000;
   const isBright = brightness > 155;
   return { R, G, B, brightness, isBright };
-}
+};
 
-function toRGBA(color:string, alpha:string | number = 1):string {
+export function toRGBA(color:string, alpha:string | number = 1):string {
   const { R, G, B } = getRGBA(color);
   return `rgba(${R},${G},${B},${alpha})`;
-}
+};
 
-function hexIsLight(color:string):boolean {
+export function hexIsLight(color:string):boolean {
   const { isBright } = getRGBA(color);
   return isBright;
-}
+};
 
 
 const surfaces = plugin(( { matchUtilities, theme } ) => {
-
   const getColorScale:ColorGetterFn = (hue) => theme(`colors.${hue}`);
 
   let btnBase:CSSRuleObject = {
@@ -41,7 +40,7 @@ const surfaces = plugin(( { matchUtilities, theme } ) => {
     paddingRight: theme('spacing.2'),
     borderRadius: theme('borderRadius.sm'),
     backgroundColor: 'transparent',
-    border: '0px solid var(--border-color)',
+    border: '0px solid var(--btn-border-color)',
     transition: 'all 0.2s ease-in-out',
     color: 'var(--txt-color)',
   };
@@ -53,12 +52,15 @@ const surfaces = plugin(( { matchUtilities, theme } ) => {
       [`box-${hue}`]: (value:string) => {
         let isLight = hexIsLight(value);
         return {
-          '--tw-ring-color': isLight ? toRGBA(colors['300'], '0.5') : toRGBA(colors['900'], '0.5'),
           '--tw-ring-opacity': '0.5',
-          '--border-color': toRGBA(isLight ? colors['300'] : colors['500'], '0.8'),
+          '--border-color': isLight ? colors['500'] : colors['300'],
+          '--btn-border-color': isLight ? toRGBA(colors[300], '0.5') : toRGBA(colors[900], '0.5'),
+          '--bg-color': toRGBA(`${isLight ? colors[700] : colors[50]}`, '0.75'),
+          '--bg-hover': toRGBA(`${isLight ? colors[700] : colors[50]}`, '0.1'),
+          '--txt-color': isLight ? colors[700] : colors[50],
           backgroundColor: value,
           color: isLight ? colors['900'] : colors['50'],
-          borderColor: isLight ? colors['500'] : colors['300'],
+          borderColor: 'var(--border-color)',
           'h1,h2,h3,h4,h5,h6': {
             fontWeight: '600',
             color: isLight ? colors['900'] : colors['50'],
@@ -67,10 +69,7 @@ const surfaces = plugin(( { matchUtilities, theme } ) => {
             color: isLight ? colors['700'] : colors['300'],
           },
           'button': {
-            '--border-color': isLight ? toRGBA(colors[300], '0.5') : toRGBA(colors[900], '0.5'),
-            '--bg-color': toRGBA(`${isLight ? colors[700] : colors[50]}`, '0.75'),
-            '--bg-hover': toRGBA(`${isLight ? colors[700] : colors[50]}`, '0.1'),
-            '--txt-color': isLight ? colors[700] : colors[50],
+
             ...btnBase,
             '&:hover': {
               backgroundColor: 'var(--bg-hover)',
@@ -89,4 +88,6 @@ const surfaces = plugin(( { matchUtilities, theme } ) => {
   });
 });
 
-module.exports = surfaces;
+module.exports = Object.assign(surfaces, {
+  hexIsLight, toRGBA, getRGBA
+});
