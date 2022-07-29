@@ -5,7 +5,7 @@ import type { DefaultColors } from 'tailwindcss/types/generated/colors';
 type DefaultColorScales = Omit<DefaultColors, 'inherit' | 'current' | 'transparent' | 'black' | 'white'>;
 type DefaultColorName = keyof DefaultColorScales;
 
-const getRGBA = (color:string) => {
+export const getRGBA = (color:string) => {
   const hex = color.replace('#', '');
   const bits = hex.length / 3;
   const factor = bits === 1 ? 17 : 1;
@@ -18,22 +18,26 @@ const getRGBA = (color:string) => {
   return { R, G, B, brightness, isBright };
 };
 
-const toRGBA = (color:string, alpha:string | number = 1):string => {
+export const toRGBA = (color:string, alpha:string | number = 1):string => {
   const { R, G, B } = getRGBA(color);
   return `rgba(${R},${G},${B},${alpha})`;
 };
 
-const hexIsLight = (color:string):boolean => {
+export const hexIsLight = (color:string):boolean => {
   const { isBright } = getRGBA(color);
   return isBright;
 };
 
+export const getVar = <
+  P extends keyof DefaultColorScales,
+  T extends keyof DefaultColorScales[P]
+>([low, hi, ref]: [T,T,string], h: P, themeFn: (arg0: string) => DefaultColorScales[P]) => {
+  return themeFn(`colors.${h}`)[hexIsLight(ref) ? low : hi];
+};
 
 const surfaces = plugin(( { matchUtilities, theme } ) => {
   // check that this version of Tailwind supports our plugin.
   if (!matchUtilities) return;
-  // helper function, makes things a bit more concise
-  const getColorScale = <K extends DefaultColorName>(hue: K):DefaultColorScales[K] => theme(`colors.${hue}`);
   // get all of the color groupings in our current theme.
   const shades = Object.keys(theme('colors')) as DefaultColorName[];
   // stashing this here as a way to keep global CSS consistent
@@ -68,30 +72,24 @@ const surfaces = plugin(( { matchUtilities, theme } ) => {
       },
     }
   };
-
-  return shades.map(hue => {
-    const h = getColorScale(hue);
-    const getVar = <T extends keyof typeof h>(args0: T, args1: T, ref: string) => {
-      return h[hexIsLight(ref) ? args0 : args1];
-    };
-    return matchUtilities({
-      [`box-${hue}`]: (value:string) => ({
-        '--tw-ring-opacity': '0.5',
-        '--tw-ring-color': getVar('700', '200', value),
-        '--tw-border-color': getVar('600', '300', value),
-        '--surface-heading-color': getVar('900', '50', value),
-        '--surface-text-color': getVar('800', '100', value),
-        '--surface-caption-color': getVar('600', '300', value),
-        '--surface-border-color': getVar('500', '300', value),
-        '--surface-btn-bg-color': getVar('50', '300', value),
-        '--surface-bg-color': value,
-        ...baseStyle,
-      })
-    }, {
-      values: getColorScale(hue),
-      type: 'color',
-    });
-  });
+  // loop over each theme color
+  return shades.map(hue => matchUtilities({
+    [`box-${hue}`]: (value:string) => ({
+      '--tw-ring-opacity': '0.5',
+      '--tw-ring-color': getVar(['700', '200', value], hue, theme),
+      '--tw-border-color': getVar(['600', '300', value], hue, theme),
+      '--surface-heading-color': getVar(['900', '50', value], hue, theme),
+      '--surface-text-color': getVar(['800', '100', value], hue, theme),
+      '--surface-caption-color': getVar(['600', '300', value], hue, theme),
+      '--surface-border-color': getVar(['500', '300', value], hue, theme),
+      '--surface-btn-bg-color': getVar(['50', '300', value], hue, theme),
+      '--surface-bg-color': value,
+      ...baseStyle,
+    })
+  }, {
+    values: theme(`colors.${hue}`),
+    type: 'color',
+  }))
 });
 
 module.exports = Object.assign(surfaces, {
